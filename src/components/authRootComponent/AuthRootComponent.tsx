@@ -1,15 +1,50 @@
-import { useLocation } from 'react-router-dom'
-import LoginPage from '../login/loginPage'
-import RegisterPage from '../register/registerPage'
-import { Box } from '@mui/material'
-import './style.css'
+import { useLocation } from 'react-router-dom';
+import LoginPage from '../login/LoginPage';
+import RegisterPage from '../register/RegisterPage';
+import { Box } from '@mui/material';
+import './style.css';
+import { useState } from 'react';
+import { instance } from '../../utils/axiosFolder/axios';
 
-function AuthRootComponent() {
-  const location = useLocation()
+const AuthRootComponent: React.FC = (): JSX.Element => {
+  const location = useLocation();
+
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleSubmit = async (e: { preventDefault: () => void }) => {
+    e.preventDefault();
+
+    if (location.pathname === '/login') {
+      //запрос объекта, который будем отправлять
+      const userData = {
+        email,
+        password,
+      };
+
+      //response объекта, который мы получаем
+      const user = await instance.post('/login', userData);
+      console.log(user.data);
+    }
+    //////////////////////////////////////////////////////////////////////////////////////!
+    //запрос объекта, который будем отправлять
+    if (location.pathname === '/register') {
+      const userData = {
+        name,
+        email,
+        password,
+      };
+
+      //response объекта, который мы получаем
+      const newUser = await instance.post('/register', userData);
+      console.log(newUser);
+    }
+  };
 
   return (
     <div className="root">
-      <div className="form">
+      <form className="form" onSubmit={handleSubmit}>
         <Box
           display="flex"
           justifyContent="center"
@@ -22,14 +57,18 @@ function AuthRootComponent() {
           boxShadow={'5px 5px 10px #ccc'}
         >
           {location.pathname === '/login' ? (
-            <LoginPage />
+            <LoginPage setEmail={setEmail} setPassword={setPassword} />
           ) : location.pathname === '/register' ? (
-            <RegisterPage />
+            <RegisterPage
+              setName={setName}
+              setEmail={setEmail}
+              setPassword={setPassword}
+            />
           ) : null}
         </Box>
-      </div>
+      </form>
     </div>
-  )
-}
+  );
+};
 
-export default AuthRootComponent
+export default AuthRootComponent;
