@@ -1,9 +1,14 @@
 import { Outlet, Navigate } from 'react-router-dom'
+import { useAuth } from '../cutomHookRedux/CustomHook'
 
 function PrivateRouter() {
-  const auth = true
+  const auth = useAuth()
 
-  return auth ? <Outlet /> : <Navigate to="login" />
+  return auth || localStorage.getItem('access_token') ? (
+    <Outlet />
+  ) : (
+    <Navigate to="login" />
+  )
 }
 
 export default PrivateRouter
